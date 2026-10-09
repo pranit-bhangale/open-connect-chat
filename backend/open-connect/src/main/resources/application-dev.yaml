@@ -48,3 +48,22 @@ server:
     accept-count: 500 # Sets the connection backlog when the server cannot immediately accept more connections.
     connection-timeout: 5s # Sets the time Tomcat waits for a connection request to arrive.
     keep-alive-timeout: 20s # Sets the idle timeout for persistent HTTP keep-alive connections.
+open-connect:
+  cors:
+    allowed-origins:
+      - ${CORS_ALLOWED_ORIGIN}
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+      - PATCH
+      - HEAD
+    allowed-headers:
+      - Content-Type
+      - X-API-Version
+      - Accept
+      - Origin
+      - Access-Control-Request-Method
+      - Access-Control-Request-Headers

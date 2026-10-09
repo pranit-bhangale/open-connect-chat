@@ -22,7 +22,6 @@ public class CorsConfig implements WebMvcConfigurer {
         config.setAllowedOrigins(properties.allowedOrigins());
         config.setAllowedMethods(properties.allowedMethods());
         config.setAllowedHeaders(properties.allowedHeaders());
-        config.setAllowCredentials(properties.allowCredentials());
 
         final var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
@@ -37,7 +36,6 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedMethods(properties.allowedMethods()
                         .toArray(String[]::new))
                 .allowedHeaders(properties.allowedHeaders()
-                        .toArray(String[]::new))
-                .allowCredentials(properties.allowCredentials());
+                        .toArray(String[]::new));
     }
 }
