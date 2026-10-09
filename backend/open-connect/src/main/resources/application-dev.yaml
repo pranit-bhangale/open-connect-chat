@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: open-connect
+  lifecycle:
+    timeout-per-shutdown-phase: 20s # Allows up to 20 seconds for each shutdown phase to complete.
+  threads:
+    virtual:
+      enabled: true # Enables virtual threads for supported Spring Boot Operations.
+  main:
+    keep-alive: true # Keeps the JVM alive when virtual threads are enabled and other threads are daemon threads.
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/connect}
+      auto-index-creation: false
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092} # Specifies Kafka brokers.
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all # Waits for acknowledgements from the required in-sync replicas.
+      properties:
+        linger.ms: 5 # Waits up to 5 ms to accumulate records for batching, subject to other conditions.
+        batch.size: 32768 # Sets the target producer batch size to 32 KiB per partition.
+        compression.type: snappy # Compresses Kafka batches to reduce network traffic.
+        enable.idempotence: true # Prevents duplicate records caused by producer retries within Kafka's idempotence guarantees.
+    consumer:
+      group-id: connect-chat # Groups consumers so they can share partitions and coordinate offsets.
+      auto-offset-reset: latest # Starts at the latest offset when no valid committed offset exists.
+      enable-auto-commit: false # Disables automatic offset commits so the listener container can manage commits.
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      concurrency: 3 # Configures up to three consumer threads per listener container.
+      ack-mode: record # Commits offsets according to record-level listener processing, subject to error handling.
+    template:
+      default-topic: chat-messages # Sets the default topic used by KafkaTemplate when sending via its default-topic methods.
+chat:
+  kafka:
+    topic: chat-messages
+server:
+  port: 8080
+  shutdown: graceful
+  tomcat:
+    threads:
+      max: 200 # Sets the maximum Tomcat platform-worker thread count in the conventional threading model.
+      min-spare: 20 # Keeps at least 20 spare Tomcat worker threads available.
+    max-connections: 10000 # Sets the maximum number of connections Tomcat can handle concurrently.
+    accept-count: 500 # Sets the connection backlog when the server cannot immediately accept more connections.
+    connection-timeout: 5s # Sets the time Tomcat waits for a connection request to arrive.
+    keep-alive-timeout: 20s # Sets the idle timeout for persistent HTTP keep-alive connections.
